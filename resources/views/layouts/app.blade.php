@@ -15,6 +15,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div id="app">
@@ -23,6 +24,19 @@
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
+                </div>
+                <ul class="navbar-nav align-content-center">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('customers') }}">Clientes</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('products') }}">Productos</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('orders') }}">Pedidos</a>
+                  </li>
+                </ul>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -76,5 +90,33 @@
             @yield('content')
         </main>
     </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+              e.preventDefault();
+              const form = this.closest('.form-delete');
+              
+              Swal.fire({
+                  title: '¿Estás seguro?',
+                  text: "¡No podrás revertir esta acción!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Sí, eliminar',
+                  cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      form.submit(); // Si el usuario confirma, se envía el formulario
+                  }
+              });
+            });
+        });
+      });
+
+    </script>
 </body>
 </html>

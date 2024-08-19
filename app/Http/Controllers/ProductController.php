@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CustomerController extends Controller
+class ProductController extends Controller
 {
   /**
    * Display a listing of the resource.
    */
   public function index()
   {
-    $customers = Customer::all();
+    $products = Product::all();
 
-    return view('customers.index', compact('customers'));
+    return view('products.index', compact('products'));
   }
 
   /**
@@ -23,7 +23,7 @@ class CustomerController extends Controller
    */
   public function create()
   {
-    return view('customers.create');
+    return view('products.create');
   }
 
   /**
@@ -33,27 +33,27 @@ class CustomerController extends Controller
   {
     // solo recibimos ciertos datos
     $data = $request->only(
-      'name', 
-      'phone', 
+      'name',
+      'description',
     );
 
-    $validator = $this->validateCustomer($request->all());
+    $validator = $this->validateProduct($request->all());
 
     // Devolvemos un error si fallan las validaciones
     if ($validator->fails()) {
-      return redirect()->route('customers.create')
+      return redirect()->route('products.create')
       ->withErrors($validator)
       ->withInput();
     }
 
-    // Creamos un nuevo cliente
-    $customer = new Customer();
-    $customer->name = $data['name'];
-    $customer->phone = $data['phone'];
-    $customer->save();
+    // Creamos un nuevo producto
+    $product = new Product();
+    $product->name = $data['name'];
+    $product->description = $data['description'];
+    $product->save();
 
-    // Redirigimos a la lista de clientes
-    return redirect()->route('customers');
+    // Redirigimos a la lista de productos
+    return redirect()->route('products');
   }
 
   /**
@@ -69,11 +69,11 @@ class CustomerController extends Controller
    */
   public function edit(string $id)
   {
-    $customer = Customer::find($id);
-    if(isset($customer->id)) {
-      return view('customers.edit', compact('customer'));
+    $product = Product::find($id);
+    if(isset($product->id)) {
+      return view('products.edit', compact('product'));
     } else {
-      return redirect()->route('customers');
+      return redirect()->route('products');
     }
   }
 
@@ -82,33 +82,33 @@ class CustomerController extends Controller
    */
   public function update(Request $request, string $id)
   {
-    $customer = Customer::find($id);
-    if(!isset($customer->id)) {
-      return redirect()->route('customers');
+    $product = Product::find($id);
+    if(!isset($product->id)) {
+      return redirect()->route('products');
     }
     // solo recibimos ciertos datos
     $data = $request->only(
       'name', 
-      'phone', 
+      'description', 
     );
 
     // Realizamos validaciones a la información que entra
-    $validator = $this->validateCustomer($request->all());
+    $validator = $this->validateProduct($request->all());
 
     // Devolvemos un error si fallan las validaciones
     if ($validator->fails()) {
-      return redirect()->route('customers.edit', ['id' => $id])
+      return redirect()->route('products.edit', ['id' => $id])
       ->withErrors($validator)
       ->withInput();
     }
 
     // Creamos un nuevo cliente
-    $customer->name = $data['name'];
-    $customer->phone = $data['phone'];
-    $customer->save();
+    $product->name = $data['name'];
+    $product->description = $data['description'];
+    $product->save();
 
-    // Redirigimos a la lista de clientes
-    return redirect()->route('customers');
+    // Redirigimos a la lista de productos
+    return redirect()->route('products');
   }
 
   /**
@@ -116,34 +116,31 @@ class CustomerController extends Controller
    */
   public function delete(string $id)
   {
-    $customer = Customer::find($id);
-    if(isset($customer->id)) {
-      $customer->delete();
+    $product = Product::find($id);
+    if(isset($product->id)) {
+      $product->delete();
     }
 
-    return redirect()->route('customers')
-    ->with('success', 'Cliente eliminado correctamente.');
+    return redirect()->route('products')
+    ->with('success', 'Producto eliminado correctamente.');
   }
 
-  private function validateCustomer(array $data)
+  private function validateProduct(array $data)
   {
     $validator = Validator::make($data, [
       'name' => ['required', 'string', 'max:255'],
-      'phone' => ['required', 'string', 'min:10', 'max:15'],
+      'description' => ['nullable', 'string', 'max:255'],
     ], [
         'required' => 'El campo :attribute es obligatorio.',
         'string' => 'El campo :attribute debe ser una cadena de texto.',
         'max' => [
             'string' => 'El campo :attribute no debe tener más de :max caracteres.',
         ],
-        'min' => [
-            'string' => 'El campo :attribute debe tener al menos :min dígitos.',
-        ],
     ]);
 
     $validator->setAttributeNames([
         'name' => 'nombre',
-        'phone' => 'teléfono',
+        'description' => 'descripción',
     ]);
 
     return $validator;

@@ -53,7 +53,7 @@ class CustomerController extends Controller
     $customer->save();
 
     // Redirigimos a la lista de clientes
-    return redirect()->route('customers');
+    return redirect()->route('customers.index')->with('success', 'Cliente creado correctamente.');
   }
 
   /**
@@ -73,7 +73,7 @@ class CustomerController extends Controller
     if(isset($customer->id)) {
       return view('customers.edit', compact('customer'));
     } else {
-      return redirect()->route('customers');
+      return redirect()->route('customers.index');
     }
   }
 
@@ -84,7 +84,7 @@ class CustomerController extends Controller
   {
     $customer = Customer::find($id);
     if(!isset($customer->id)) {
-      return redirect()->route('customers');
+      return redirect()->route('customers.index');
     }
     // solo recibimos ciertos datos
     $data = $request->only(
@@ -108,7 +108,7 @@ class CustomerController extends Controller
     $customer->save();
 
     // Redirigimos a la lista de clientes
-    return redirect()->route('customers');
+    return redirect()->route('customers.index')->with('success', 'Cliente actualizado correctamente.');
   }
 
   /**
@@ -121,7 +121,7 @@ class CustomerController extends Controller
       $customer->delete();
     }
 
-    return redirect()->route('customers')
+    return redirect()->route('customers.index')
     ->with('success', 'Cliente eliminado correctamente.');
   }
 

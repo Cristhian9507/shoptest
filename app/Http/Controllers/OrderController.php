@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use App\Models\Product;
@@ -16,7 +17,7 @@ class OrderController extends Controller
    */
   public function index()
   {
-    $orders = Order::with(['products', 'status'])->get();
+    $orders = Order::with(['customer', 'orderDetails', 'orderStatus'])->get();
 
     return view('orders.index', compact('orders'));
   }
@@ -40,29 +41,47 @@ class OrderController extends Controller
   {
     // solo recibimos ciertos datos
     $data = $request->only(
-      'products',
-      'date',
-      'status_id',
       'customer_id',
+      'product_id',
+      'quantity',
+      'date',
+      'order_status_id',
     );
 
     $validator = $this->validateOrder($request->all());
 
     // Devolvemos un error si fallan las validaciones
     if ($validator->fails()) {
-      return redirect()->route('products.create')
+      return redirect()->route('orders.create')
       ->withErrors($validator)
       ->withInput();
     }
 
-    // Creamos un nuevo producto
-    $product = new Product();
-    $product->name = $data['name'];
-    $product->description = $data['description'];
-    $product->save();
+    // Creamos un nuevo pedido
+    $order = Order::create([
+      'date' => $data['date'],
+      'order_status_id' => $data['order_status_id'],
+      'customer_id' => $data['customer_id'],
+    ]);
+
+    $productIds = $request->input('product_id');
+    $quantities = $request->input('quantity');
+
+    // Recorremos los arrays
+    foreach ($productIds as $index => $productId) {
+      $quantity = $quantities[$index];
+
+      // Aquí puedes realizar operaciones con $productId y $quantity
+      // Por ejemplo, guardar cada producto en la base de datos
+      OrderDetail::create([
+        'order_id' => $order->id,
+        'product_id' => $productId,
+        'quantity' => $quantity,
+      ]);
+    }
 
     // Redirigimos a la lista de productos
-    return redirect()->route('products');
+    return redirect()->route('orders.index')->with('success', 'Pedido creado correctamente.');
   }
 
   /**
@@ -78,11 +97,14 @@ class OrderController extends Controller
    */
   public function edit(string $id)
   {
-    $product = Product::find($id);
-    if(isset($product->id)) {
-      return view('products.edit', compact('product'));
+    $order = Order::with(['customer', 'orderDetails', 'orderStatus'])->find($id);
+    if(isset($order->id)) {
+      $products = Product::all();
+      $statuses = OrderStatus::all();
+      $customers = Customer::all();
+      return view('orders.edit', compact('order', 'products', 'statuses', 'customers'));
     } else {
-      return redirect()->route('products');
+      return redirect()->route('orders.index');
     }
   }
 
@@ -91,33 +113,54 @@ class OrderController extends Controller
    */
   public function update(Request $request, string $id)
   {
-    $product = Product::find($id);
-    if(!isset($product->id)) {
-      return redirect()->route('products');
+    $order = Order::find($id);
+    if(!isset($order->id)) {
+      return redirect()->route('orders.index');
     }
+
     // solo recibimos ciertos datos
     $data = $request->only(
-      'name', 
-      'description', 
+      'customer_id',
+      'product_id',
+      'quantity',
+      'date',
+      'order_status_id',
     );
 
-    // Realizamos validaciones a la información que entra
     $validator = $this->validateOrder($request->all());
 
     // Devolvemos un error si fallan las validaciones
     if ($validator->fails()) {
-      return redirect()->route('products.edit', ['id' => $id])
+      return redirect()->route('orders.edit', $id)
       ->withErrors($validator)
       ->withInput();
     }
 
-    // Creamos un nuevo cliente
-    $product->name = $data['name'];
-    $product->description = $data['description'];
-    $product->save();
+    $order->date = $data['date'];
+    $order->order_status_id = $data['order_status_id'];
+    $order->customer_id = $data['customer_id'];
+    $order->save();
 
-    // Redirigimos a la lista de productos
-    return redirect()->route('products');
+    // Eliminamos los detalles del pedido
+    OrderDetail::where('order_id', $order->id)->delete();
+
+    $productIds = $request->input('product_id');
+    $quantities = $request->input('quantity');
+
+    // Recorremos los arrays
+    foreach ($productIds as $index => $productId) {
+      $quantity = $quantities[$index];
+
+      // Aquí puedes realizar operaciones con $productId y $quantity
+      // Por ejemplo, guardar cada producto en la base de datos
+      OrderDetail::create([
+        'order_id' => $order->id,
+        'product_id' => $productId,
+        'quantity' => $quantity,
+      ]);
+    }
+
+    return redirect()->route('orders.index')->with('success', 'Pedido actualizado correctamente.');
   }
 
   /**
@@ -125,29 +168,36 @@ class OrderController extends Controller
    */
   public function delete(string $id)
   {
-    $product = Product::find($id);
-    if(isset($product->id)) {
-      $product->delete();
+    $order = Order::find($id);
+    if(isset($order->id)) {
+      // eliminamos el detalle del pedido
+      OrderDetail::where('order_id', $order->id)->delete();
+      // eliminamos el pedido
+      $order->delete();
     }
 
-    return redirect()->route('products')
-    ->with('success', 'Producto eliminado correctamente.');
+    return redirect()->route('orders.index')
+    ->with('success', 'Pedido eliminado correctamente.');
   }
 
   private function validateOrder(array $data)
   {
     $validator = Validator::make($data, [
       'customer_id' => ['required', 'integer'],
-      'status_id' => ['required', 'integer'],
-      'products' => ['required', 'array'],
+      'order_status_id' => ['required', 'integer'],
+      'date' => ['required', 'date'],
+      'product_id' => ['required', 'array'],
+      'quantity' => ['required', 'array'],
     ], [
         'required' => 'El campo :attribute es obligatorio.',
     ]);
 
     $validator->setAttributeNames([
-        'customer_id' => 'cliente',
-        'products' => 'productos',
-        'status_id' => 'estado',
+      'customer_id' => 'cliente',
+      'products' => 'productos',
+      'order_status_id' => 'estado',
+      'date' => 'fecha',
+      'quantity' => 'cantidad',
     ]);
 
     return $validator;

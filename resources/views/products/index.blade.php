@@ -34,11 +34,11 @@
               <td>{{ $product->name }}</td>
               <td>{{ $product->description }}</td>
               <td>
-                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Editar</a>
+                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning ">Editar</a>
                 <form action="{{ route('products.delete', $product->id) }}" method="POST" class="d-inline form-delete">
                   @csrf
                   @method('DELETE')
-                  <button type="submit" class="btn btn-danger btn-delete">Eliminar</button>
+                  <button type="submit" class="btn btn-danger btn-delete mt-1">Eliminar</button>
                 </form>
               </td>
             </tr>

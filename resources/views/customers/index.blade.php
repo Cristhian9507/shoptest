@@ -17,6 +17,11 @@
       {{ session('error') }}
     </div>
   @endif
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o teléfono">
+    </div>
+  </div>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead class="thead-dark">
@@ -27,24 +32,46 @@
           <th>Acciones</th>
         </tr>
       </thead>
-        <tbody>
-            @foreach($customers as $customer)
-                <tr>
-                    <td>{{ $customer->id }}</td>
-                    <td>{{ $customer->name }}</td>
-                    <td>{{ $customer->phone }}</td>
-                    <td>
-                      <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-warning">Editar</a>
-                      <form action="{{ route('customers.delete', $customer->id) }}" method="POST" class="d-inline form-delete">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit" class="btn btn-danger btn-delete">Eliminar</button>
-                      </form>
-                    </td>
-                </tr>
-            @endforeach
+        <tbody id="customerTable">
+          @foreach($customers as $customer)
+            <tr>
+              <td>{{ $customer->id }}</td>
+              <td>{{ $customer->name }}</td>
+              <td>{{ $customer->phone }}</td>
+              <td>
+                <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-warning">Editar</a>
+                <form action="{{ route('customers.delete', $customer->id) }}" method="POST" class="d-inline form-delete">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-delete">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          @endforeach
         </tbody>
     </table>
   </div>
 </div>
+<script>
+  document.getElementById('searchInput').addEventListener('keyup', function() {
+    console.log('dankdja')
+    // cambiamos todo el contenido a minúsculas
+    var searchTerm = this.value.toLowerCase();
+    var rows = document.querySelectorAll('#customerTable tr');
+
+    rows.forEach(function(row) {
+      // El contenido de name y phone también lo cambiamos a minúsculas
+      var name = row.cells[1].textContent.toLowerCase();
+      var phone = row.cells[2].textContent.toLowerCase();
+
+      if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+        // si está incluido o lo encuentra, lo muestra
+        row.style.display = '';
+      } else {
+        // de lo contrario ocultamos la fila  
+        row.style.display = 'none';
+      }
+    });
+  });
+</script>
 @endsection

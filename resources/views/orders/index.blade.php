@@ -22,8 +22,9 @@
       <thead class="thead-dark">
         <tr>
           <th>ID</th>
+          <th>Fecha</th>
           <th>Cliente</th>
-          <th>Productos</th>
+          <th>Productos (Cant.)</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -32,13 +33,14 @@
           @foreach($orders as $order)
             <tr>
               <td>{{ $order->id }}</td>
+              <td>{{ date("Y-m-d", strtotime($order->date)) }}</td>
               <td>{{ $order->customer->name }}</td>
               <td>
-                @foreach($order->orderDetails as $orderDetail)
-                  <span class="badge badge-primary">{{ $orderDetail->product->name }} ($orderDetail->quantity)</span>
+                @foreach($order->orderDetails as $index => $orderDetail)
+                  {{ $orderDetail->product->name }} <b>({{$orderDetail->quantity}})</b>@if($index+1 !== count($order->orderDetails)) |@endif
                 @endforeach
               </td>
-              <td>{{ $order->status->name }}</td>
+              <td>{{ $order->orderStatus->name }}</td>
               <td>
                 <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning">Editar</a>
                 <form action="{{ route('orders.delete', $order->id) }}" method="POST" class="d-inline form-delete">

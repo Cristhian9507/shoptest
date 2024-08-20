@@ -53,7 +53,7 @@ class ProductController extends Controller
     $product->save();
 
     // Redirigimos a la lista de productos
-    return redirect()->route('products');
+    return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
   }
 
   /**
@@ -73,7 +73,7 @@ class ProductController extends Controller
     if(isset($product->id)) {
       return view('products.edit', compact('product'));
     } else {
-      return redirect()->route('products');
+      return redirect()->route('products.index');
     }
   }
 
@@ -84,7 +84,7 @@ class ProductController extends Controller
   {
     $product = Product::find($id);
     if(!isset($product->id)) {
-      return redirect()->route('products');
+      return redirect()->route('products.index');
     }
     // solo recibimos ciertos datos
     $data = $request->only(
@@ -108,7 +108,7 @@ class ProductController extends Controller
     $product->save();
 
     // Redirigimos a la lista de productos
-    return redirect()->route('products');
+    return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
   }
 
   /**
@@ -121,7 +121,7 @@ class ProductController extends Controller
       $product->delete();
     }
 
-    return redirect()->route('products')
+    return redirect()->route('products.index')
     ->with('success', 'Producto eliminado correctamente.');
   }
 

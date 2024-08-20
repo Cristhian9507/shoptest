@@ -16,7 +16,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::group(['middleware' => 'auth'], function () {
   Route::prefix('customers')->group(function () {
-    Route::get('/', [CustomerController::class, 'index'])->name('customers');
+    Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('/create', [CustomerController::class, 'create'])->name('customers.create');
     Route::get('/edit/{id}', [CustomerController::class, 'edit'])->name('customers.edit');
     Route::post('/store', [CustomerController::class, 'store'])->name('customers.store');
@@ -24,7 +24,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete/{id}', [CustomerController::class, 'delete'])->name('customers.delete');
   });
   Route::prefix('products')->group(function () {
-    Route::get('/', [ProductController::class, 'index'])->name('products');
+    Route::get('/', [ProductController::class, 'index'])->name('products.index');
     Route::get('/create', [ProductController::class, 'create'])->name('products.create');
     Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('products.edit');
     Route::post('/store', [ProductController::class, 'store'])->name('products.store');
@@ -32,7 +32,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete/{id}', [ProductController::class, 'delete'])->name('products.delete');
   });
   Route::prefix('orders')->group(function () {
-    Route::get('/', [OrderController::class, 'index'])->name('orders');
+    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/create', [OrderController::class, 'create'])->name('orders.create');
     Route::get('/edit/{id}', [OrderController::class, 'edit'])->name('orders.edit');
     Route::post('/store', [OrderController::class, 'store'])->name('orders.store');

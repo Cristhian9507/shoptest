@@ -16,26 +16,36 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand" href="{{ url('/home') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
                 </div>
-                <ul class="navbar-nav align-content-center">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('customers') }}">Clientes</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('products') }}">Productos</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('orders') }}">Pedidos</a>
-                  </li>
-                </ul>
+                @auth
+                  <ul class="navbar-nav align-content-center">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('customers.index') }}">Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('products.index') }}">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('orders.index') }}">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                      <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="nav-link btn btn-link">Cerrar sesión</button>
+                      </form>
+                    </li>
+                    </li>
+                  </ul>
+                @endauth
                 </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -54,12 +64,6 @@
                             @if (Route::has('login'))
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
                             @endif
                         @else

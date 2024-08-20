@@ -10,6 +10,12 @@ class Order extends Model
 {
   use HasFactory, SoftDeletes;
 
+  protected $fillable = [
+    'customer_id',
+    'order_status_id',
+    'date',
+  ];
+
   public function customer()
   {
     return $this->belongsTo(Customer::class);
@@ -17,10 +23,10 @@ class Order extends Model
 
   public function orderDetails()
   {
-    return $this->belongsToMany(OrderDetail::class)->withPivot('quantity', 'product_id');
+    return $this->hasMany(OrderDetail::class);
   }
 
-  public function status()
+  public function orderStatus()
   {
     return $this->belongsTo(OrderStatus::class);
   }

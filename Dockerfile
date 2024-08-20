@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    npm
+    npm \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Instala extensiones de PHP
 RUN docker-php-ext-install pdo mbstring zip exif pcntl
@@ -40,7 +41,9 @@ RUN composer install
 RUN npm install && npm run build
 
 # Cambia los permisos para el storage y bootstrap
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Ajustes de permisos
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
 
 EXPOSE 9000
 CMD ["php-fpm"]

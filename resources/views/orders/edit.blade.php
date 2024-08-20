@@ -65,7 +65,7 @@
     </div>
     <div class="row mt-3">
       <div class="col-md-12 text-center">
-        <button type="button" class="btn btn-primary" id="add-product-line">Agregar Producto</button>
+        <button type="button" class="btn btn-success" id="add-product-line">Agregar Producto</button>
       </div>
     </div>
     <div class="row">

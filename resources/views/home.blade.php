@@ -16,14 +16,17 @@
 
                     {{ __('¡Estás dentro!') }}
                     <div class="row pt-2">
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <a href="{{ route('customers.index') }}" class="btn btn-primary">Clientes</a>
                       </div>
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <a href="{{ route('products.index') }}" class="btn btn-primary">Productos</a>
                       </div>
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <a href="{{ route('orders.index') }}" class="btn btn-primary">Pedidos</a>
+                      </div>
+                      <div class="col-md-3">
+                        <a href="{{ route('api.index') }}" class="btn btn-primary">Api</a>
                       </div>
                     </div>
                 </div>

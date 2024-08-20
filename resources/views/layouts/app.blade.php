@@ -27,7 +27,7 @@
                 </a>
                 </div>
                 @auth
-                  <ul class="navbar-nav align-content-center">
+                  <ul class="navbar-nav align-content-center" style="margin-left: 5px;">
                     <li class="nav-item">
                       <a class="nav-link" href="{{ route('customers.index') }}">Clientes</a>
                     </li>

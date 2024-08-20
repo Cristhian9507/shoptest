@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+                <div class="card-header">{{ __('Inicio') }}</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -14,7 +14,21 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('¡Estás dentro!') }}
+                    <div class="row pt-2">
+                      <div class="col-md-3">
+                        <a href="{{ route('customers.index') }}" class="btn btn-primary">Clientes</a>
+                      </div>
+                      <div class="col-md-3">
+                        <a href="{{ route('products.index') }}" class="btn btn-primary">Productos</a>
+                      </div>
+                      <div class="col-md-3">
+                        <a href="{{ route('orders.index') }}" class="btn btn-primary">Pedidos</a>
+                      </div>
+                      <div class="col-md-3">
+                        <a href="{{ route('api.index') }}" class="btn btn-primary">Api</a>
+                      </div>
+                    </div>
                 </div>
             </div>
         </div>

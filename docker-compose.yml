@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Servicio PHP
+  shoptest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shoptest
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - shoptest_network
+
+  # Servicio Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: laravel_nginx
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - shoptest
+    networks:
+      - shoptest_network
+
+  # Servicio MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: laravel_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - shoptest_network
+
+networks:
+  shoptest_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
